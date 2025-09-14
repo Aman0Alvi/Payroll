@@ -4,11 +4,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {
-  // You can put your JUnit tests here
-  // Feel free to create other files, as needed, to organize your tests
+    @Test
+    void grossHandlesOvertime() {
+        double g = PayrollCalculator.gross(45, 10); // 40*10 + 5*10*1.5 = 475
+        assertEquals(475.00, g, 0.001);
+    }
 
-  @Test
-  void itWorks() {
-    assertEquals(true, true);
-  }
+    @Test
+    void negativePayModeTriggersWhenAfterTaxTooSmall() { // Tiny hours -> afterTax < union+insurance
+        PayrollCalculator.Result r = PayrollCalculator.compute(2, 16.78, 4, LifeInsurancePlan.NONE);
+        assertTrue(r.negativeDeductionsMode);
+        assertEquals(PayrollCalculator.round(r.gross - r.socSec - r.fedTax - r.stateTax), r.net, 0.001);
+    }
 }
